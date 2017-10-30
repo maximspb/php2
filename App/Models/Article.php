@@ -1,12 +1,19 @@
 <?php
-namespace Models;
+namespace App\Models;
 
-use Models\News;
+use App\Db;
+use App\Model;
 
-class Article extends News
+class Article extends Model
 {
     protected static $table = 'news';
     public $id;
     public $title;
     public $text;
+    public static function getLastRec(int $num)
+    {
+        $db = new Db();
+        $sql = 'SELECT * from'.' '. static::$table .' '. 'ORDER BY id DESC '. 'LIMIT '. $num;
+        return $db->query($sql);
+    }
 }

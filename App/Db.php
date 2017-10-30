@@ -1,7 +1,7 @@
 <?php
-namespace Models;
+namespace App;
 
-use PDO ;
+use \PDO ;
 
 class Db
 {

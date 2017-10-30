@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $pageTitle ; ?></title>
+    <title>Главная страница</title>
 </head>
 <body>
 <?php foreach ($news as $article) { ?>

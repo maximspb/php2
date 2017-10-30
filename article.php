@@ -1,6 +1,7 @@
 <?php
-require __DIR__.'/autoload.php';
-use Models\Article;
+require __DIR__ . '/autoload.php';
+
+use App\Models\Article;
 
 $id = isset($_GET['id']) ? $_GET['id'] : false;
 $article = Article::findById($id);
