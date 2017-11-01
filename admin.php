@@ -37,4 +37,7 @@ if ($newArticle) {
     header('Location:/admin.php/');
 }
 
+//массив актуальных id в базе
+$allIds =array_column(\App\Models\Article::getAll(), 'id');
+
 include __DIR__.'/templates/adminTpl.php';
