@@ -3,16 +3,21 @@ namespace App;
 
 use \PDO ;
 
+use App\Config;
+
 class Db
 {
     protected $dbh;
     public function __construct()
     {
+        $config = Config::getInstance();
+        $params = $config->getData();
         $this->dbh = new PDO(
-            'mysql:host=localhost; dbname=php1; 
-            charset=UTF8',
-            'root',
-            '123'
+            'mysql:host='.$params['host'].'; 
+            dbname='.$params['dbname'].'; 
+            charset='.$params['charset'],
+            $params['username'],
+            $params['passwd']
         )
         or die('Ошибка соединения');
     }
