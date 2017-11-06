@@ -56,17 +56,18 @@ abstract class Model
         $sets =[];
         $data =[];
         foreach ($fields as $name => $value) {
+            if ('data' == $name) {
+                continue;
+            }
             $data[':'.$name] = $value;
             if ('id' == $name) {
                 continue;
             }
-            $sets[] = $name . '= :'.$name;
-
+            $sets[] = $name . ' = :'.$name;
         }
         $sql ='UPDATE '. static::$table .' '.
             'SET '. implode(', ', $sets) .
             ' WHERE id = :id';
-
         $db = new Db();
         return $db->execute($sql, $data);
     }
@@ -80,9 +81,9 @@ abstract class Model
         $fields = get_object_vars($this);
         $fieldNames=[];
         $values =[];
-
+        $db = new Db();
         foreach ($fields as $field => $value) {
-            if ('id' == $field || 'data' == $field) {
+            if ('data' == $field) {
                     continue;
             }
                 $fieldNames[] = $field;
@@ -91,8 +92,8 @@ abstract class Model
         $sql ='INSERT INTO '. static::$table .'
             ('. implode(', ', $fieldNames) . ')
             VALUES ('.implode(', ', array_keys($values)).')';
-            $db = new Db();
-            return $db->execute($sql, $values);
+        $db->execute($sql, $values);
+        return $this->id = $db->lastId();
     }
 
     /**
