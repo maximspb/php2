@@ -2,6 +2,11 @@
 
 namespace App;
 
+/**
+ * класс-Синглтон.
+ * Class Config
+ * @package App
+ */
 class Config
 {
     protected static $instance;

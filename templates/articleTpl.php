@@ -14,5 +14,6 @@
     <article>
         <?php echo $article->text ; ?>
     </article>
+    <span><?php echo $article->author->name ; ?></span>
 </body>
 </html>
