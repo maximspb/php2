@@ -52,12 +52,7 @@ class Article extends Model
         
         if ('author' == $name) :
             if (!empty($this->author_id)) {
-                 $db = new Db();
-                 $data =[':id'=>$this->author_id];
-                 $sql ='SELECT * FROM authors WHERE id =:id';
-                 $res = $db->query($sql, $data, Author::class);
-                 $result = $res[0];
-                 return $result;
+                return Author::findById($this->author_id);
             }
         endif;
     }

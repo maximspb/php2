@@ -1,8 +1,8 @@
 <?php
 namespace App\Models;
 
-class Author
+class Author extends Model
 {
-    public $id;
     public $name;
+    protected static $table = 'authors';
 }
