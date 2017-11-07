@@ -8,8 +8,8 @@ $view = new \App\View();
 $view->allArticles = \App\Models\Article::getAll();
 
 if ($delete) {
-    $view->oneArticle =\App\Models\Article::findById($id);
-    $view->oneArticle->delete();
+    $oneArticle =\App\Models\Article::findById($id);
+    $oneArticle->delete();
     header('Location:/admin/delete.php');
 }
 $view->display(__DIR__.'/../templates/deleteTpl.php');
