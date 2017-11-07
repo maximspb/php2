@@ -43,7 +43,8 @@ abstract class Model
         $sql ='SELECT * FROM'.' '. static::$table.' '. 'WHERE id = :id';
         $db = new Db();
         $arr = $db->query($sql, $data, static::class);
-        return $arr[0];
+        $result = $arr[0];
+        return $result;
     }
 
     /**
@@ -69,7 +70,7 @@ abstract class Model
             'SET '. implode(', ', $sets) .
             ' WHERE id = :id';
         $db = new Db();
-        return $db->execute($sql, $data);
+        $db->execute($sql, $data);
     }
 
     /**
@@ -93,7 +94,7 @@ abstract class Model
             ('. implode(', ', $fieldNames) . ')
             VALUES ('.implode(', ', array_keys($values)).')';
         $db->execute($sql, $values);
-        return $this->id = $db->lastId();
+        $this->id = $db->lastId();
     }
 
     /**
@@ -104,7 +105,7 @@ abstract class Model
         $data=[':id'=>$this->id];
         $sql ='DELETE FROM '.static::$table.' '.'WHERE id =:id';
         $db = new Db();
-        return $db->execute($sql, $data);
+        $db->execute($sql, $data);
     }
 
     /**
@@ -113,10 +114,11 @@ abstract class Model
      */
     public function save()
     {
-        if (empty($this->id)) {
-            return $this->insert();
+
+        if (!empty($this->id)) {
+            $this->update();
         } else {
-            return $this->update();
+           $this->insert();
         }
     }
 }

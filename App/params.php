@@ -5,3 +5,4 @@ $data = ['host'=>'localhost',
     'username'=>'root',
     'passwd'=>'123'
 ];
+$this->data = $data;

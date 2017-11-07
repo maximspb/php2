@@ -15,6 +15,7 @@ class Article extends Model
     /**
      * @var $id
      */
+
     public $id;
     /**
      * @var string $title
@@ -54,7 +55,8 @@ class Article extends Model
              $data =[':id'=>$this->author_id];
              $sql ='SELECT * FROM authors WHERE id =:id';
              $res = $db->query($sql, $data, Author::class);
-             return $res['0'];
+             $result = $res[0];
+             return $result;
         }
     }
 }

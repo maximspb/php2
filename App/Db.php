@@ -56,7 +56,7 @@ class Db
         $sth->execute($params);
         return $sth->fetchAll(PDO::FETCH_CLASS, $class);
     }
-     public function lastId()
+    public function lastId()
     {
         return $this->dbh->lastInsertId();
     }
