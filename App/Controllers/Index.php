@@ -1,9 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use App\Exceptions\Http404Exception;
 use App\Exceptions\ItemNotFoundException;
-use App\Exceptions\MultiException;
 use App\Models\Article;
 
 class Index extends Controller
@@ -21,7 +19,7 @@ class Index extends Controller
         try {
             $this->view->article = Article::findById($_GET['id']);
         } catch (ItemNotFoundException $error) {
-            echo $error->pageNotFound();
+            $error->pageNotFound();
             exit();
         }
         $this->view->display(__DIR__ . '/../../templates/News/One.php');
