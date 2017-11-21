@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Db;
 use App\Model;
+//use App\View;
 
 class Article extends Model
 {
@@ -49,11 +50,17 @@ class Article extends Model
      */
     public function __get($name)
     {
-        
-        if ('author' == $name) :
-            if (!empty($this->author_id)) {
-                return Author::findById($this->author_id);
-            }
-        endif;
+
+            return Author::findById($this->author_id);
+
+    }
+    public function __isset($name)
+    {
+        if ($name == 'author' && !empty($this->author_id)) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

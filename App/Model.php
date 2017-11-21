@@ -1,9 +1,14 @@
 <?php
 namespace App;
 
-use App\Traits\MagicProperties;
-
 use App\Db;
+use App\Exceptions\DbRequestException;
+use App\Exceptions\InsertRecordException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\MultiException;
+use App\Exceptions\EmptyTitleException;
+use App\Exceptions\EmptyTextException;
+use App\Models\Article;
 
 /**
  * Class Model
@@ -11,11 +16,13 @@ use App\Db;
  */
 abstract class Model
 {
-    use MagicProperties;
+
     /**
      * @var array
      */
-    protected static $table = [];
+    protected static $table;
+    protected static $data = [];
+
     /**
      * @property int $id
      */
@@ -25,6 +32,7 @@ abstract class Model
      * получение массива всех записей из таблицы в виде объектов класса
      * @return array
      */
+
     public static function getAll()
     {
         $db = new Db();
@@ -39,27 +47,31 @@ abstract class Model
      */
     public static function findById($id)
     {
+
+        $db = new Db();
         $data =[':id'=>$id];
         $sql ='SELECT * FROM'.' '. static::$table.' '. 'WHERE id = :id';
-        $db = new Db();
         $arr = $db->query($sql, $data, static::class);
-        $result = $arr[0];
-        return $result;
+        if (!empty($arr)) {
+            return $arr[0];
+        } else {
+            throw new ItemNotFoundException('Страница не найдена');
+        }
     }
+
 
     /**
      * обновление записи в таблице
      * @return bool
      */
+
     protected function update()
     {
+        $db = new Db();
         $fields = get_object_vars($this);
         $sets =[];
         $data =[];
         foreach ($fields as $name => $value) {
-            if ('data' == $name) {
-                continue;
-            }
             $data[':'.$name] = $value;
             if ('id' == $name) {
                 continue;
@@ -69,7 +81,6 @@ abstract class Model
         $sql ='UPDATE '. static::$table .' '.
             'SET '. implode(', ', $sets) .
             ' WHERE id = :id';
-        $db = new Db();
         $db->execute($sql, $data);
     }
 
@@ -79,21 +90,24 @@ abstract class Model
      */
     protected function insert()
     {
+
+        $db = new Db();
         $fields = get_object_vars($this);
         $fieldNames=[];
         $values =[];
-        $db = new Db();
         foreach ($fields as $field => $value) {
-            if ('data' == $field) {
-                    continue;
-            }
                 $fieldNames[] = $field;
                 $values[':'.$field] = $value;
         }
+
         $sql ='INSERT INTO '. static::$table .'
             ('. implode(', ', $fieldNames) . ')
             VALUES ('.implode(', ', array_keys($values)).')';
+        try {
         $db->execute($sql, $values);
+        } catch (\Throwable $e) {
+            throw new DbRequestException('Ошибка добавления записи');
+        }
         $this->id = $db->lastId();
     }
 
@@ -102,10 +116,14 @@ abstract class Model
      */
     public function delete()
     {
+        $db = new Db();
         $data=[':id'=>$this->id];
         $sql ='DELETE FROM '.static::$table.' '.'WHERE id =:id';
-        $db = new Db();
-        $db->execute($sql, $data);
+        try {
+            $db->execute($sql, $data);
+        } catch (\Throwable $e) {
+            throw new DbRequestException('Ошибка удаления из базы');
+        }
     }
 
     /**
@@ -118,7 +136,30 @@ abstract class Model
         if (!empty($this->id)) {
             $this->update();
         } else {
-           $this->insert();
+            $this->insert();
         }
+    }
+
+    public function fill(array $data)
+    {
+        $errors = new MultiException();
+        if (array_key_exists('title', $data) && '' == $data['title']) {
+            $errors->addError(new \App\Exceptions\EmptyTitleException('Пустое поле заголовка'));
+        }
+        if (array_key_exists('text', $data) && '' == $data['text']){
+
+            $errors->addError(new EmptyTextException('Пустое поле текста'));
+        }
+
+        foreach ($data as $key=>$value):
+            if (property_exists($this, $key)){
+                $this->$key = $value;
+            }
+        endforeach;
+
+
+        if (!$errors->empty()) :
+            throw $errors;
+        endif;
     }
 }

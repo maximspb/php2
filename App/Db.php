@@ -1,6 +1,9 @@
 <?php
 namespace App;
 
+use App\Exceptions\DbConnectException;
+use App\Exceptions\DbRequestException;
+use App\Exceptions\InsertRecordException;
 use \PDO ;
 
 use App\Config;
@@ -21,14 +24,17 @@ class Db
     {
         $config = Config::getInstance();
         $params = $config->getData();
-        $this->dbh = new PDO(
-            'mysql:host='.$params['host'].'; 
-            dbname='.$params['dbname'].'; 
-            charset='.$params['charset'],
-            $params['username'],
-            $params['passwd']
-        )
-        or die('Ошибка соединения');
+        try {
+            $this->dbh = new PDO(
+                'mysql:host='.$params['host'].'; 
+                dbname='.$params['dbname'].'; 
+                charset='.$params['charset'],
+                $params['username'],
+                $params['passwd']
+            );
+        } catch (\Throwable $e) {
+            throw new DbConnectException();
+        }
     }
 
     /**
@@ -39,8 +45,9 @@ class Db
      */
     public function execute(string $query, array $params = [])
     {
+
         $sth = $this->dbh->prepare($query);
-        return $sth->execute($params);
+        $sth->execute($params);
     }
 
     /**
@@ -52,10 +59,12 @@ class Db
      */
     public function query(string $sql, array $params = [], $class = \stdClass::class)
     {
+
         $sth = $this->dbh->prepare($sql);
         $sth->execute($params);
         return $sth->fetchAll(PDO::FETCH_CLASS, $class);
     }
+
     public function lastId()
     {
         return $this->dbh->lastInsertId();
