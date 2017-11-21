@@ -1,34 +1,37 @@
 <?php
 namespace App\Exceptions;
 
-use App\Traits\MagicProperties;
 use App\Traits\ArrayTrait;
 
 class MultiException extends \Exception implements \Throwable, \ArrayAccess, \Iterator
 {
-    protected $data =[];
+    /**
+     *трейт с методами итерации
+     */
     use ArrayTrait;
-    use MagicProperties;
 
+    /**
+     * @var array
+     * массив всех ошибок, взятых в мультиисключение
+     */
+    protected $data =[];
+
+    /**
+     * @param \Throwable $error
+     * сбор исключений в массив
+     */
     public function addError(\Throwable $error)
     {
         $this->data[] = $error;
-    }
-
-    public function __set($name, $value)
-    {
-        $this->data[$name] = $value;
     }
 
     public function empty() : bool
     {
         return empty($this->data);
     }
+
     public function getAlldata()
     {
         return $this->data;
     }
-
-
-
 }
