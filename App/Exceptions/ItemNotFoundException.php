@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: max
- * Date: 14.11.17
- * Time: 8:08
- */
-
 namespace App\Exceptions;
-
 
 class ItemNotFoundException extends ModelException
 {
