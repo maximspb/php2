@@ -1,9 +1,8 @@
 <?php
 namespace App\Controllers;
 
-use App\Exceptions\BlankFieldException;
+
 use App\Exceptions\DbRequestException;
-use App\Exceptions\InsertRecordException;
 use App\Exceptions\ItemNotFoundException;
 use App\Models\Article;
 use App\Models\Author;
@@ -20,8 +19,8 @@ class Admin extends Controller
          * через добавление "секретного" слова в URL,
          * при наличии которого есть доступ, без него - нет.
          */
-        require __DIR__.'/../configs/urlParams.php';
-        if (in_array('Secret', $urlParts)) {
+        $url = explode('/', $_SERVER['REQUEST_URI']);
+        if (in_array('Secret', $url)) {
             return true;
         } else {
             return false;
