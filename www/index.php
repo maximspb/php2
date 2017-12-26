@@ -11,12 +11,13 @@ try {
     $ctrl->action($actionType);
 
 } catch (\App\Exceptions\ItemNotFoundException $error) {
-    $error->pageNotFound();
+    $error->getMessage();
     die;
 } catch (\App\Exceptions\DbConnectException $error) {
-    $error->errorPage();
-    die;
+    $error->getMessage();
+    exit(1);
 
 } catch (\Throwable $e) {
     $e->getMessage();
+    exit(1);
 }

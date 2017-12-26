@@ -47,7 +47,7 @@ class Admin extends Controller
             $this->article->fill($_POST);
             $this->article->save();
             header('Location:/Admin/');
-            exit();
+            exit(1);
         } catch (MultiException $e) {
                 $this->view->article = $this->article;
                 $this->view->article->title =$_POST['title'];
@@ -62,14 +62,14 @@ class Admin extends Controller
         $article = \App\Models\Article::findById($_GET['id']);
         if (empty($article)) {
             http_response_code(404);
-            exit();
+            exit(1);
         }
         try {
             $article->delete();
             header('Location:/Admin/');
         } catch (DbRequestException $e) {
             echo $e->getMessage();
-            die;
+            exit(1);
         }
     }
 }
