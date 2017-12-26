@@ -59,13 +59,13 @@ class Admin extends Controller
 
     protected function actionDelete()
     {
-        $article = \App\Models\Article::findById($_GET['id']);
-        if (empty($article)) {
+
+        if (empty($this->article->id)) {
             http_response_code(404);
             exit(1);
         }
         try {
-            $article->delete();
+            $this->article->delete();
             header('Location:/Admin/');
         } catch (DbRequestException $e) {
             echo $e->getMessage();
