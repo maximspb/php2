@@ -3,12 +3,11 @@ namespace App;
 
 use App\Db;
 use App\Exceptions\DbRequestException;
-use App\Exceptions\InsertRecordException;
+
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\MultiException;
 use App\Exceptions\EmptyTitleException;
 use App\Exceptions\EmptyTextException;
-use App\Models\Article;
 
 /**
  * Class Model
@@ -22,6 +21,7 @@ abstract class Model
      */
     protected static $table;
     protected static $data = [];
+
 
     /**
      * @property int $id
@@ -81,7 +81,11 @@ abstract class Model
         $sql ='UPDATE '. static::$table .' '.
             'SET '. implode(', ', $sets) .
             ' WHERE id = :id';
+        try {
         $db->execute($sql, $data);
+        } catch (\Throwable $e) {
+            throw new DbRequestException('Ошибка обновления записи');
+        }
     }
 
     /**
@@ -96,18 +100,19 @@ abstract class Model
         $fieldNames=[];
         $values =[];
         foreach ($fields as $field => $value) {
-                $fieldNames[] = $field;
+            if ('id' == $field) {
+                continue;
+            }
+            $fieldNames[] = $field;
+
                 $values[':'.$field] = $value;
         }
 
         $sql ='INSERT INTO '. static::$table .'
             ('. implode(', ', $fieldNames) . ')
             VALUES ('.implode(', ', array_keys($values)).')';
-        try {
+
         $db->execute($sql, $values);
-        } catch (\Throwable $e) {
-            throw new DbRequestException('Ошибка добавления записи');
-        }
         $this->id = $db->lastId();
     }
 
@@ -133,33 +138,32 @@ abstract class Model
     public function save()
     {
 
-        if (!empty($this->id)) {
-            $this->update();
-        } else {
+        if (empty($this->id)) {
             $this->insert();
+
+        } else {
+            $this->update();
         }
     }
 
     public function fill(array $data)
     {
         $errors = new MultiException();
-        if (array_key_exists('title', $data) && '' == $data['title']) {
-            $errors->addError(new \App\Exceptions\EmptyTitleException('Пустое поле заголовка'));
+        if (empty($data['title'])) {
+            $errors->addError(new EmptyTitleException('Пустое поле заголовка'));
         }
-        if (array_key_exists('text', $data) && '' == $data['text']){
-
+        if (empty($data['text'])){
             $errors->addError(new EmptyTextException('Пустое поле текста'));
         }
 
-        foreach ($data as $key=>$value):
-            if (property_exists($this, $key)){
-                $this->$key = $value;
-            }
-        endforeach;
-
-
-        if (!$errors->empty()) :
-            throw $errors;
+        if ($errors->empty()) :
+            foreach ($data as $key=>$value):
+                if (property_exists($this, $key)){
+                    $this->$key = $value;
+                }
+            endforeach;
+        else:
+                throw $errors;
         endif;
     }
 }

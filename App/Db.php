@@ -47,7 +47,11 @@ class Db
     {
 
         $sth = $this->dbh->prepare($query);
-        $sth->execute($params);
+        try {
+            $sth->execute($params);
+        } catch (\Throwable $e) {
+            throw new DbRequestException('Ошибка добавления записи');
+        }
     }
 
     /**

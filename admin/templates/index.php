@@ -19,7 +19,7 @@
         <td><?php echo $article->id ; ?></td>
         <td><?php echo $article->title ; ?></td>
         <td>
-            <a href="/Admin/Edit/?id=<?php echo $article->id ; ?>">
+            <a href="/Admin/Form/?id=<?php echo $article->id ; ?>">
                 Редактировать
             </a>
         </td>
@@ -31,6 +31,6 @@
     </tr>
     <?php endforeach; ?>
 </table><br>
-<a href="/Admin/Insert">Создать новость</a>
+<a href="/Admin/Form">Создать новость</a>
 </body>
 </html>

@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<form action="" method="post">
+<form action="/Admin/Save/?id=<?php echo $article->id ; ?>" method="post">
     id Автора:<br>
     <select name="author_id" id="">
         <?php foreach ($authors as $author) : ?>
@@ -27,11 +27,14 @@
         Текст новости:<br>
         <textarea name="text" cols="50" rows="20"><?php echo $article->text ; ?></textarea>
     </label><br>
-    <input type="submit" name="save">
+    <button type="submit" name="save">сохранить</button>
 </form>
-<?php foreach($errors as $e):
-echo $e->getmessage(); ?><br>
+<?php
+if (!empty($errors)):
+foreach ($errors as $e) :
+    echo $e->getmessage(); ?><br>
 <?php endforeach;
- ?>
+endif;
+?>
 </body>
 </html>
