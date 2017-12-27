@@ -8,6 +8,13 @@ use App\Exceptions\MultiException;
 class Admin extends Controller
 {
 
+    /**
+     * @var Article
+     * объект класса Article, создаваемый при
+     * вызове админ-контроллера и используемый
+     * в экшенах формы, сохранения и удаления
+     * статьи.
+     */
     protected $article;
 
     protected function access()
@@ -31,15 +38,23 @@ class Admin extends Controller
         $this->view->display(__DIR__ . '/../../admin/templates/index.php');
     }
 
-
+    /**
+     * экшен отображения формы ввода
+     * для редактирования либо создания статьи
+     */
     protected function actionForm()
     {
-        $this->view->article = $this->article;
         $this->view->authors = Author::getAll();
+        //передача объекта Article в представление
+        $this->view->article = $this->article;
         $this->view->display(__DIR__ . '/../../admin/templates/edit.php');
     }
 
-
+    /**
+     * экшен-обработчик формы.
+     * Сохранение статьи в БД, в случае ошибок валидации-
+     * повторный вызов формы без потери ранее введенных данных
+     */
     protected function actionSave()
     {
 
