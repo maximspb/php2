@@ -6,8 +6,6 @@ use App\Exceptions\DbRequestException;
 
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\MultiException;
-use App\Exceptions\EmptyTitleException;
-use App\Exceptions\EmptyTextException;
 
 /**
  * Class Model
@@ -38,6 +36,12 @@ abstract class Model
         $db = new Db();
         $sql = 'SELECT * FROM' . ' ' . static::$table;
         return $db->query($sql, [], static::class);
+    }
+    public static function findAll()
+    {
+        $db = new Db();
+        $sql = 'SELECT * FROM' . ' ' . static::$table;
+        return $db->queryEach($sql, [], static::class);
     }
 
     /**
@@ -146,24 +150,30 @@ abstract class Model
         }
     }
 
+
     public function fill(array $data)
     {
         $errors = new MultiException();
-        if (empty($data['title'])) {
-            $errors->addError(new EmptyTitleException('Пустое поле заголовка'));
-        }
-        if (empty($data['text'])){
-            $errors->addError(new EmptyTextException('Пустое поле текста'));
+        foreach ($data as $property => $value) {
+            if ('id'== $property || !property_exists($this, $property)) :
+                continue;
+            endif;
+
+            $exception ='App\Exceptions\Validate\\'. ucfirst($property).'Exception';
+
+            if (empty($value)) :
+                $errors->addError(new $exception);
+            endif;
         }
 
         if ($errors->empty()) :
-            foreach ($data as $key=>$value):
-                if (property_exists($this, $key)){
+            foreach ($data as $key => $value) :
+                if (property_exists($this, $key)) {
                     $this->$key = $value;
                 }
             endforeach;
-        else:
-                throw $errors;
+        else :
+            throw $errors;
         endif;
     }
 }
