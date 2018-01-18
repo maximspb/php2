@@ -10,14 +10,15 @@ try {
     $ctrl = new $class;
     $ctrl->action($actionType);
 
-} catch (\App\Exceptions\ItemNotFoundException $error) {
-    $error->getMessage();
-    die;
+} catch (\App\Exceptions\Exception404 $error) {
+    http_response_code(404);
+    include __DIR__.'/../templates/404.php';
+    exit(1);
 } catch (\App\Exceptions\DbConnectException $error) {
-    $error->getMessage();
+    echo $error->getMessage();
     exit(1);
 
 } catch (\Throwable $e) {
-    $e->getMessage();
+    echo $e->getMessage();
     exit(1);
 }
