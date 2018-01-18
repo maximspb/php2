@@ -4,7 +4,7 @@ namespace App;
 use App\Db;
 use App\Exceptions\DbRequestException;
 
-use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\Exception404;
 use App\Exceptions\MultiException;
 
 /**
@@ -59,7 +59,7 @@ abstract class Model
         if (!empty($arr)) {
             return $arr[0];
         } else {
-            throw new ItemNotFoundException('Страница не найдена');
+            throw new Exception404();
         }
     }
 
