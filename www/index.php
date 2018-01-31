@@ -5,20 +5,13 @@ $urlParts = explode('/', $url);
 $controller = empty($urlParts[1]) ? 'Index' : $urlParts[1];
 $actionType = empty($urlParts[2]) ? 'Default': $urlParts[2];
 
+
+$class ='\\App\\Controllers\\'.$controller;
+$ctrl = new $class;
 try {
-    $class ='\\App\\Controllers\\'.$controller;
-    $ctrl = new $class;
     $ctrl->action($actionType);
-
-} catch (\App\Exceptions\Exception404 $error) {
-    http_response_code(404);
-    echo $error->getMessage();
-    exit(1);
-} catch (\App\Exceptions\DbConnectException $error) {
-    echo $error->getMessage();
-    exit(1);
-
-} catch (\Throwable $e) {
+} catch (PDOException $e) {
     echo $e->getMessage();
     exit(1);
+
 }
