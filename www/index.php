@@ -13,5 +13,7 @@ try {
 } catch (PDOException $e) {
     echo $e->getMessage();
     exit(1);
-
+} catch (\App\Exceptions\Exception404 $e){
+    echo $e->getMessage();
+    exit(1);
 }

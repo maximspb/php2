@@ -1,5 +1,7 @@
 {
   "require": {
-    "psr/log": "*"
+    "psr/log": "*",
+    "swiftmailer/swiftmailer": "*"
+
   }
 }

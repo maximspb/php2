@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 use App\Exceptions\DbRequestException;
-use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\Exception404;
 use App\Models\Article;
 use App\Models\Author;
 use App\Exceptions\MultiException;
@@ -26,7 +26,12 @@ class Admin extends Controller
         parent::__construct();
 
         if (!empty($_GET['id'])) :
+            try{
             $this->article = \App\Models\Article::findById($_GET['id']);
+            } catch (Exception404 $e) {
+            echo $e->getMessage();
+            exit(1);
+            }
         else :
             $this->article = new Article();
         endif;
@@ -61,8 +66,8 @@ class Admin extends Controller
         try {
             $this->article->fill($_POST);
             $this->article->save();
-            header('Location:/Admin/');
-            exit(1);
+            header('Location:/Admin');
+            exit();
         } catch (MultiException $e) {
                 $this->view->article = $this->article;
                 $this->view->article->title =$_POST['title'];
@@ -75,10 +80,6 @@ class Admin extends Controller
     protected function actionDelete()
     {
 
-        if (empty($this->article->id)) {
-            http_response_code(404);
-            exit(1);
-        }
         try {
             $this->article->delete();
             header('Location:/Admin/');

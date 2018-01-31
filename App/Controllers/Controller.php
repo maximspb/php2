@@ -2,19 +2,21 @@
 namespace App\Controllers;
 
 use App\View;
-use App\Exceptions\MultiException;
 
 abstract class Controller
 {
     protected $view;
+
     public function __construct()
     {
         $this->view = new View();
     }
+
     protected function access()
     {
         return true;
     }
+
     public function action(string $actionType)
     {
         $method = 'action'.$actionType;
@@ -23,7 +25,7 @@ abstract class Controller
         } else {
             http_response_code(403);
             echo 'Доступ  закрыт';
-            exit();
+            exit(1);
         }
     }
 }

@@ -10,7 +10,8 @@ class Index extends Controller
 
     protected function actionDefault()
     {
-        $this->view->news = Article::getLastRec(3);
+	    //$news = Article::getLastRec(3);
+        $this->view->news = Article::findAll();
         $this->view->display(__DIR__ . '/../../templates/News/Default.php');
     }
 
@@ -19,7 +20,8 @@ class Index extends Controller
         try {
             $this->view->article = Article::findById($_GET['id']);
         } catch (Exception404 $error) {
-            throw $error;
+            echo $error->getMessage();
+            exit(1);
         }
         $this->view->display(__DIR__ . '/../../templates/News/One.php');
     }
