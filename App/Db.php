@@ -1,11 +1,13 @@
 <?php
 namespace App;
 
-use App\Exceptions\DbConnectException;
+
 use App\Exceptions\DbRequestException;
 use App\Exceptions\InsertRecordException;
 use \PDO ;
-
+use Swift_SmtpTransport;
+use Swift_Mailer;
+use Swift_Message;
 use App\Config;
 
 class Db
@@ -24,6 +26,7 @@ class Db
     {
         $config = Config::getInstance();
         $params = $config->getData();
+        $mailConfig = $config->getMailConfig();
         try {
             $this->dbh = new PDO(
                 'mysql:host='.$params['host'].'; 
@@ -32,8 +35,24 @@ class Db
                 $params['username'],
                 $params['passwd']
             );
-        } catch (\Throwable $e) {
-            throw new DbConnectException();
+        } catch (\Throwable $error) {
+            $transport = (new Swift_SmtpTransport(
+                $mailConfig['host'],
+                $mailConfig['port'],
+                $mailConfig['encryption']))
+                ->setUsername($mailConfig['username'])
+                ->setPassword($mailConfig['password'])
+            ;
+
+            $mailer = new Swift_Mailer($transport);
+            $message = (new Swift_Message('Критическая ошибка подключения к БД'))
+                ->setFrom([$mailConfig['username'] => 'Admin'])
+                ->setTo([$mailConfig['username'] => 'Admin'])
+                ->setBody($error->getMessage())
+            ;
+
+            $mailer->send($message);
+            throw new $error('На сайте ведутся технические работы. Зайдите позже');
         }
     }
 
@@ -67,6 +86,16 @@ class Db
         $sth = $this->dbh->prepare($sql);
         $sth->execute($params);
         return $sth->fetchAll(PDO::FETCH_CLASS, $class);
+    }
+
+    public function queryEach(string $sql, array $params = [], $class = \stdClass::class)
+    {
+        $sth = $this->dbh->prepare($sql);
+        $sth->execute($params);
+        $sth->setFetchMode(PDO::FETCH_CLASS, $class);
+        while ($data = $sth->fetch()) :
+            yield $data;
+        endwhile;
     }
 
     public function lastId()
