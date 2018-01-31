@@ -9,12 +9,14 @@ namespace App;
  */
 class Config
 {
-    protected static $instance;
-    protected $data;
+    private static $instance;
+    private $data;
+    private $mailConfig;
 
     protected function __construct()
     {
         $this->data = include_once __DIR__ . '/configs/params.php';
+        $this->mailConfig = include_once __DIR__ . '/configs/mailconfig.php';
     }
     public static function getInstance()
     {
@@ -26,5 +28,9 @@ class Config
     public function getData()
     {
         return $this->data;
+    }
+    public function getMailConfig()
+    {
+        return $this->mailConfig;
     }
 }
