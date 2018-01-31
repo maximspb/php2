@@ -2,11 +2,13 @@
 namespace App\Models;
 
 use App\Db;
+use App\Exceptions\Exception404;
 use App\Model;
 //use App\View;
 
 class Article extends Model
 {
+
     /**
      * по умолчанию задано имя таблицы новостей в БД
      * @var string $table
@@ -50,9 +52,12 @@ class Article extends Model
      */
     public function __get($name)
     {
-
+            try{
             return Author::findById($this->author_id);
-
+            } catch (Exception404 $e){
+                echo $e->getMessage();
+                exit();
+            }
     }
     public function __isset($name)
     {
