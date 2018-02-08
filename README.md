@@ -1,3 +1,7 @@
+ДЗ№5:
+https://github.com/maximspb/php2/blob/master/App/Model.php#L152
+Исправлен метод fill и другие ошибки
+
 Дз№6. Задача:
 Подключить библиотеку SwiftMailer,
 отправлять сообщение на почту админа
